@@ -3,62 +3,61 @@ let computerScore = 0;
 
 const resultsDiv = document.getElementById("results");
 const scoreDiv   = document.getElementById("score");
+const buttons = document.querySelectorAll(".choice");
 
-// Fonction qui génère le choix de l’ordinateur
 function computerPlay() {
-    const choices = ["rock", "paper", "scissors"];
-    return choices[Math.floor(Math.random() * 3)];
+    return ["rock", "paper", "scissors"][Math.floor(Math.random() * 3)];
 }
 
-// Fonction principale dun round
 function playRound(playerSelection) {
     const computerSelection = computerPlay();
 
     if (playerSelection === computerSelection) {
-        resultsDiv.textContent = `Draw! You both chose ${playerSelection}.`;
+        displayMessage(`Draw! Both chose ${playerSelection}.`, "draw");
     } else if (
         (playerSelection === "rock" && computerSelection === "scissors") ||
         (playerSelection === "paper" && computerSelection === "rock") ||
         (playerSelection === "scissors" && computerSelection === "paper")
     ) {
         playerScore++;
-        resultsDiv.textContent = `You Win! ${playerSelection} beats ${computerSelection}`;
+        displayMessage(`You win! ${playerSelection} beats ${computerSelection}`, "win");
     } else {
         computerScore++;
-        resultsDiv.textContent = `You Lose! ${computerSelection} beats ${playerSelection}`;
+        displayMessage(`You lose! ${computerSelection} beats ${playerSelection}`, "lose");
     }
 
     updateScore();
     checkWinner();
 }
 
-// Met à jour le score à l’écran
-function updateScore() {
-    scoreDiv.textContent = `Player: ${playerScore} - Computer: ${computerScore}`;
+function displayMessage(msg, type) {
+    resultsDiv.textContent = msg;
+    resultsDiv.className = "message " + type;
 }
 
-// Vérifie si quelqu’un a gagné
+function updateScore() {
+    scoreDiv.textContent = `Player: ${playerScore} — Computer: ${computerScore}`;
+}
+
 function checkWinner() {
     if (playerScore === 5) {
-        resultsDiv.textContent = "🎉 YOU WIN THE GAME! 🎉";
+        displayMessage(" YOU WIN THE GAME! ", "win");
         resetGame();
     } else if (computerScore === 5) {
-        resultsDiv.textContent = "💀 COMPUTER WINS THE GAME! 💀";
+        displayMessage(" COMPUTER WINS THE GAME! ", "lose");
         resetGame();
     }
 }
 
-// Reset automatique
 function resetGame() {
     setTimeout(() => {
         playerScore = 0;
         computerScore = 0;
-        scoreDiv.textContent = "";
-        resultsDiv.textContent = "New Game Started!";
-    }, 1500);
+        updateScore();
+        displayMessage("New game started!", "draw");
+    }, 2000);
 }
 
-// Ajout des Event Listeners (point c)
-document.getElementById("rock").addEventListener("click", () => playRound("rock"));
-document.getElementById("paper").addEventListener("click", () => playRound("paper"));
-document.getElementById("scissors").addEventListener("click", () => playRound("scissors"));
+buttons.forEach(btn =>
+    btn.addEventListener("click", () => playRound(btn.dataset.choice))
+);
